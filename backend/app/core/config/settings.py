@@ -1,4 +1,5 @@
 # backend/app/core/config/settings.py
+
 from __future__ import annotations
 
 from urllib.parse import quote_plus
@@ -14,6 +15,10 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
         case_sensitive=False,
     )
+
+    # Application
+    app_name: str = "Posts Management API"
+    app_version: str = "1.0.0"
 
     # Server
     host: str = "0.0.0.0"
