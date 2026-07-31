@@ -28,6 +28,14 @@ services:
       context: ./backend
     env_file:
       - .env
+    environment:
+      HOST: 0.0.0.0
+      PORT: 8000
+      DB_HOST: db
+      DB_PORT: 1433
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
     ports:
       - "8000:8000"
     depends_on:
