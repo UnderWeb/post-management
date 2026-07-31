@@ -5,6 +5,6 @@ from app.core.logging.logger import (
 )
 
 __all__ = [
-    "setup_logging",
     "get_logger",
+    "setup_logging",
 ]

@@ -14,8 +14,8 @@ sys.path.insert(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
 )
 
-from app.core.config.settings import Settings  # noqa: E402
-from app.infrastructure.database.models.post_model import Base  # noqa: E402
+from app.core.config.settings import Settings
+from app.infrastructure.database.models.post_model import Base
 
 
 config = context.config

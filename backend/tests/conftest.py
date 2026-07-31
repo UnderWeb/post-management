@@ -1,7 +1,7 @@
 # backend/tests/conftest.py
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 import pytest
@@ -29,7 +29,15 @@ SAMPLE_POST_1 = Post(
     nombre="First Post",
     descripcion="Description of the first post.",
     resumen=SAMPLE_SUMMARY,
-    fecha_creacion=datetime(2025, 1, 15, 10, 0, 0),
+        fecha_creacion=datetime(
+        2025,
+        1,
+        15,
+        10,
+        0,
+        0,
+        tzinfo=timezone.utc,
+    ),
 )
 
 
@@ -44,7 +52,15 @@ SAMPLE_POST_2 = Post(
             "sample",
         ],
     },
-    fecha_creacion=datetime(2025, 1, 16, 12, 0, 0),
+    fecha_creacion=datetime(
+        2025,
+        1,
+        16,
+        12,
+        0,
+        0,
+        tzinfo=timezone.utc,
+    ),
 )
 
 

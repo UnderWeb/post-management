@@ -31,10 +31,10 @@ class CreatePostUseCase:
         descripcion = descripcion.strip()
 
         if not nombre:
-            raise ValueError("nombre must not be empty")
+            raise ValueError("nombre no puede estar vacío")
 
         if not descripcion:
-            raise ValueError("descripcion must not be empty")
+            raise ValueError("descripción no puede estar vacía")
 
         resumen = self._summarizer.summarize(descripcion)
 

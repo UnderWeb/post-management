@@ -77,7 +77,7 @@ class TestCreatePostUseCase:
             summarizer=mock_summarizer,
         )
 
-        with pytest.raises(ValueError, match="descripcion"):
+        with pytest.raises(ValueError, match="descripción"):
             use_case.execute(
                 nombre="Title",
                 descripcion="",
