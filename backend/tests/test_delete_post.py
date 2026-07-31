@@ -6,8 +6,8 @@ import pytest
 from app.application.use_cases.delete_post import DeletePostUseCase
 from app.core.exceptions import NotFoundError
 from tests.conftest import (
-    MockPostRepository,
     SAMPLE_POST_1,
+    MockPostRepository,
 )
 
 
@@ -30,10 +30,7 @@ class TestDeletePostUseCase:
 
         assert result is True
 
-        assert (
-            mock_repository.get_by_id(SAMPLE_POST_1.id)
-            is None
-        )
+        assert mock_repository.get_by_id(SAMPLE_POST_1.id) is None
 
     def test_delete_nonexistent_raises_error(
         self,

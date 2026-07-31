@@ -22,9 +22,7 @@ class NotFoundError(Exception):
         self.resource = resource
         self.identifier = identifier
 
-        super().__init__(
-            f"{resource} with id '{identifier}' not found"
-        )
+        super().__init__(f"{resource} with id '{identifier}' not found")
 
 
 def register_exception_handlers(app: FastAPI) -> None:
@@ -73,7 +71,5 @@ def register_exception_handlers(app: FastAPI) -> None:
 
         return JSONResponse(
             status_code=HTTP_500_INTERNAL_SERVER_ERROR,
-            content={
-                "detail": "An unexpected error occurred."
-            },
+            content={"detail": "An unexpected error occurred."},
         )

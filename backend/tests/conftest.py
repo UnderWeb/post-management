@@ -1,7 +1,7 @@
 # backend/tests/conftest.py
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 import pytest
@@ -12,7 +12,6 @@ from app.domain.entities.post import Post
 from app.domain.interfaces.post_repository import PostRepository
 from app.main import app
 from app.presentation import dependencies
-
 
 SAMPLE_SUMMARY: dict[str, Any] = {
     "summary": "This is a sample summary.",
@@ -29,14 +28,14 @@ SAMPLE_POST_1 = Post(
     nombre="First Post",
     descripcion="Description of the first post.",
     resumen=SAMPLE_SUMMARY,
-        fecha_creacion=datetime(
+    fecha_creacion=datetime(
         2025,
         1,
         15,
         10,
         0,
         0,
-        tzinfo=timezone.utc,
+        tzinfo=UTC,
     ),
 )
 
@@ -59,7 +58,7 @@ SAMPLE_POST_2 = Post(
         12,
         0,
         0,
-        tzinfo=timezone.utc,
+        tzinfo=UTC,
     ),
 )
 
@@ -170,13 +169,11 @@ def client(
     mock_summarizer: MockSummarizer,
 ) -> TestClient:
 
-    app.dependency_overrides[
-        dependencies.get_post_repository
-    ] = lambda: mock_repository
+    app.dependency_overrides[dependencies.get_post_repository] = lambda: mock_repository
 
-    app.dependency_overrides[
-        dependencies.get_summarizer_service
-    ] = lambda: mock_summarizer
+    app.dependency_overrides[dependencies.get_summarizer_service] = (
+        lambda: mock_summarizer
+    )
 
     with TestClient(app) as test_client:
         yield test_client

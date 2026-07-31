@@ -2,8 +2,8 @@
 from __future__ import annotations
 
 from tests.conftest import (
-    MockPostRepository,
     SAMPLE_POST_1,
+    MockPostRepository,
 )
 
 

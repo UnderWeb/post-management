@@ -6,10 +6,10 @@ from fastapi.testclient import TestClient
 from app.main import app
 from app.presentation import dependencies
 from tests.conftest import (
-    MockPostRepository,
-    MockSummarizer,
     SAMPLE_POST_1,
     SAMPLE_POST_2,
+    MockPostRepository,
+    MockSummarizer,
 )
 
 
@@ -59,9 +59,7 @@ class TestAPIEndpoints:
             ]
         )
 
-        app.dependency_overrides[
-            dependencies.get_post_repository
-        ] = lambda: repository
+        app.dependency_overrides[dependencies.get_post_repository] = lambda: repository
 
         with TestClient(app) as client:
             response = client.get("/api/posts")
@@ -85,13 +83,11 @@ class TestAPIEndpoints:
         repository = MockPostRepository()
         summarizer = MockSummarizer()
 
-        app.dependency_overrides[
-            dependencies.get_post_repository
-        ] = lambda: repository
+        app.dependency_overrides[dependencies.get_post_repository] = lambda: repository
 
-        app.dependency_overrides[
-            dependencies.get_summarizer_service
-        ] = lambda: summarizer
+        app.dependency_overrides[dependencies.get_summarizer_service] = (
+            lambda: summarizer
+        )
 
         with TestClient(app) as client:
             response = client.post(
@@ -161,30 +157,21 @@ class TestAPIEndpoints:
             ]
         )
 
-        app.dependency_overrides[
-            dependencies.get_post_repository
-        ] = lambda: repository
+        app.dependency_overrides[dependencies.get_post_repository] = lambda: repository
 
         with TestClient(app) as client:
-            response = client.delete(
-                f"/api/posts/{SAMPLE_POST_1.id}"
-            )
+            response = client.delete(f"/api/posts/{SAMPLE_POST_1.id}")
 
         assert response.status_code == 204
 
-        assert (
-            repository.get_by_id(SAMPLE_POST_1.id)
-            is None
-        )
+        assert repository.get_by_id(SAMPLE_POST_1.id) is None
 
     def test_delete_post_not_found(self) -> None:
         """DELETE missing post should return 404."""
 
         repository = MockPostRepository()
 
-        app.dependency_overrides[
-            dependencies.get_post_repository
-        ] = lambda: repository
+        app.dependency_overrides[dependencies.get_post_repository] = lambda: repository
 
         with TestClient(app) as client:
             response = client.delete("/api/posts/9999")

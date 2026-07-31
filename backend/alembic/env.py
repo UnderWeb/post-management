@@ -5,8 +5,9 @@ import os
 import sys
 from logging.config import fileConfig
 
-from alembic import context
 from sqlalchemy import engine_from_config, pool
+
+from alembic import context
 
 # Add backend root to sys.path
 sys.path.insert(
@@ -16,7 +17,6 @@ sys.path.insert(
 
 from app.core.config.settings import Settings
 from app.infrastructure.database.models.post_model import Base
-
 
 config = context.config
 

@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 
@@ -14,6 +14,4 @@ class Post:
     descripcion: str
     id: int | None = None
     resumen: dict[str, Any] = field(default_factory=dict)
-    fecha_creacion: datetime = field(
-        default_factory=lambda: datetime.now(timezone.utc)
-    )
+    fecha_creacion: datetime = field(default_factory=lambda: datetime.now(UTC))

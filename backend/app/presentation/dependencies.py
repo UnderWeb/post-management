@@ -1,8 +1,8 @@
 # backend/app/presentation/dependencies.py
 from __future__ import annotations
 
-from functools import lru_cache
 from collections.abc import Generator
+from functools import lru_cache
 
 from fastapi import Depends
 from sqlalchemy.orm import Session
@@ -20,7 +20,7 @@ def get_summarizer_service() -> SummarizerPort:
     return LexicalSummarizerService()
 
 
-def get_db_session() -> Generator[Session, None, None]:
+def get_db_session() -> Generator[Session]:
     """
     Yield a SQLAlchemy session.
 

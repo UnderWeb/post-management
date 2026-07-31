@@ -29,14 +29,9 @@ class SqlAlchemyPostRepository(PostRepository):
         return self._to_entity(model)
 
     def get_all(self) -> list[Post]:
-        result = self.session.execute(
-            select(PostModel)
-        )
+        result = self.session.execute(select(PostModel))
 
-        return [
-            self._to_entity(item)
-            for item in result.scalars().all()
-        ]
+        return [self._to_entity(item) for item in result.scalars().all()]
 
     def get_by_id(self, post_id: int) -> Post | None:
         model = self.session.get(

@@ -13,7 +13,6 @@ from app.core.exceptions import register_exception_handlers
 from app.core.logging import get_logger, setup_logging
 from app.presentation import router
 
-
 setup_logging()
 
 logger = get_logger(__name__)

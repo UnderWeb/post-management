@@ -3,9 +3,9 @@ from __future__ import annotations
 
 from app.application.use_cases.list_posts import ListPostsUseCase
 from tests.conftest import (
-    MockPostRepository,
     SAMPLE_POST_1,
     SAMPLE_POST_2,
+    MockPostRepository,
 )
 
 
@@ -26,7 +26,6 @@ class TestListPostsUseCase:
         assert len(result) == 2
         assert result[0].id == SAMPLE_POST_1.id
         assert result[1].id == SAMPLE_POST_2.id
-
 
     def test_empty_list(
         self,

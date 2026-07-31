@@ -20,25 +20,18 @@ class KeyValueFormatter(logging.Formatter):
         if record.exc_info and record.exc_info[0] is not None:
             log_entry["exception"] = self.formatException(record.exc_info)
 
-        return " | ".join(
-            f"{key}={value}"
-            for key, value in log_entry.items()
-        )
+        return " | ".join(f"{key}={value}" for key, value in log_entry.items())
 
 
 def setup_logging(level: str = "INFO") -> None:
     """Configure application-wide structured logging."""
 
     root_logger = logging.getLogger()
-    root_logger.setLevel(
-        getattr(logging, level.upper(), logging.INFO)
-    )
+    root_logger.setLevel(getattr(logging, level.upper(), logging.INFO))
 
     handler = logging.StreamHandler(sys.stdout)
 
-    formatter = KeyValueFormatter(
-        datefmt="%Y-%m-%dT%H:%M:%S"
-    )
+    formatter = KeyValueFormatter(datefmt="%Y-%m-%dT%H:%M:%S")
 
     handler.setFormatter(formatter)
 
@@ -46,13 +39,9 @@ def setup_logging(level: str = "INFO") -> None:
     root_logger.addHandler(handler)
 
     # Reduce noise from third-party libraries
-    logging.getLogger("uvicorn.access").setLevel(
-        logging.WARNING
-    )
+    logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
 
-    logging.getLogger("sqlalchemy.engine").setLevel(
-        logging.WARNING
-    )
+    logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
 
 
 def get_logger(name: str) -> logging.Logger:
