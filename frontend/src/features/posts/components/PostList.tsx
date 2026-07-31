@@ -1,6 +1,5 @@
 // src/features/posts/components/PostList.tsx
 import PostCard from './PostCard';
-
 import type { Post } from '../../../types/post';
 
 interface Props {

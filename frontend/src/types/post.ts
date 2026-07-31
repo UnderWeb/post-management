@@ -1,14 +1,12 @@
 // src/types/post.ts
-export interface PostSummary {
-  summary: string;
-  keywords: string[];
-}
-
 export interface Post {
   id: number;
   nombre: string;
   descripcion: string;
-  resumen: PostSummary;
+  resumen: {
+    summary: string;
+    keywords: string[];
+  };
   fecha_creacion: string;
 }
 
