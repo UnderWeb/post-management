@@ -1,8 +1,9 @@
+import PostsPage from './pages/PostsPage';
+
+
 function App() {
   return (
-    <main>
-      <h1>Posts Management</h1>
-    </main>
+    <PostsPage />
   );
 }
 
