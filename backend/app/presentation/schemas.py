@@ -1,4 +1,6 @@
 # backend/app/presentation/schemas.py
+"""API request and response schemas."""
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -18,35 +20,15 @@ class SummaryResponse(BaseModel):
     )
 
 
-class PostCreateRequest(BaseModel):
-    """Request payload used to create a post."""
-
-    nombre: str = Field(
-        ...,
-        min_length=1,
-        max_length=200,
-        description="Post title",
-    )
-
-    descripcion: str = Field(
-        ...,
-        min_length=1,
-        description="Post description",
-    )
-
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-
-
 class PostResponse(BaseModel):
     """API response representing a post."""
 
     id: int
-    nombre: str
-    descripcion: str
-    resumen: SummaryResponse
-    fecha_creacion: datetime
+    title: str
+    description: str
+    summary: SummaryResponse
+    file_path: str | None = None
+    created_at: datetime
 
     model_config = ConfigDict(
         from_attributes=True,

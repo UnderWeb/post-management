@@ -1,4 +1,6 @@
 # backend/app/application/use_cases/list_posts.py
+"""List posts use case."""
+
 from __future__ import annotations
 
 from app.domain.entities.post import Post

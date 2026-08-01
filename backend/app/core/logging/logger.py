@@ -1,4 +1,6 @@
 # backend/app/core/logging/logger.py
+"""Logging configuration and utilities."""
+
 from __future__ import annotations
 
 import logging
@@ -25,14 +27,11 @@ class KeyValueFormatter(logging.Formatter):
 
 def setup_logging(level: str = "INFO") -> None:
     """Configure application-wide structured logging."""
-
     root_logger = logging.getLogger()
     root_logger.setLevel(getattr(logging, level.upper(), logging.INFO))
 
     handler = logging.StreamHandler(sys.stdout)
-
     formatter = KeyValueFormatter(datefmt="%Y-%m-%dT%H:%M:%S")
-
     handler.setFormatter(formatter)
 
     root_logger.handlers.clear()
@@ -40,11 +39,9 @@ def setup_logging(level: str = "INFO") -> None:
 
     # Reduce noise from third-party libraries
     logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
-
     logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
 
 
 def get_logger(name: str) -> logging.Logger:
     """Return a named logger instance."""
-
     return logging.getLogger(name)

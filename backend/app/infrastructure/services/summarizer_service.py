@@ -1,4 +1,6 @@
 # backend/app/infrastructure/services/summarizer_service.py
+"""Lexical summarizer service."""
+
 from __future__ import annotations
 
 import re
@@ -100,6 +102,7 @@ class LexicalSummarizerService(SummarizerPort):
     """
 
     def summarize(self, text: str) -> dict[str, Any]:
+        """Generate a summary and keywords from text."""
         if not text.strip():
             return {
                 "summary": "",

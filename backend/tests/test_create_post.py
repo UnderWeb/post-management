@@ -1,4 +1,6 @@
 # backend/tests/test_create_post.py
+"""Tests for the CreatePostUseCase."""
+
 from __future__ import annotations
 
 import pytest
@@ -7,6 +9,7 @@ from app.application.use_cases.create_post import CreatePostUseCase
 from app.domain.entities.post import Post
 from tests.conftest import (
     MockPostRepository,
+    MockStorageService,
     MockSummarizer,
 )
 
@@ -18,85 +21,83 @@ class TestCreatePostUseCase:
         self,
         empty_repository: MockPostRepository,
         mock_summarizer: MockSummarizer,
+        mock_storage: MockStorageService,
     ) -> None:
         """Valid input should create and return a Post entity."""
-
         use_case = CreatePostUseCase(
             repository=empty_repository,
             summarizer=mock_summarizer,
+            storage=mock_storage,
         )
 
         result = use_case.execute(
-            nombre="Test Post",
-            descripcion="A test description.",
+            title="Test Post",
+            description="A test description.",
         )
 
         assert isinstance(result, Post)
         assert result.id > 0
-        assert result.nombre == "Test Post"
-        assert result.descripcion == "A test description."
-
-        assert result.resumen == {
+        assert result.title == "Test Post"
+        assert result.description == "A test description."
+        assert result.summary == {
             "summary": "Auto-generated summary from text.",
-            "keywords": [
-                "auto",
-                "generated",
-                "summary",
-            ],
+            "keywords": ["auto", "generated", "summary"],
         }
+        assert result.created_at is not None
 
-        assert result.fecha_creacion is not None
-
-    def test_empty_nombre_raises_error(
+    def test_empty_title_raises_error(
         self,
         empty_repository: MockPostRepository,
         mock_summarizer: MockSummarizer,
+        mock_storage: MockStorageService,
     ) -> None:
-        """Empty nombre should raise ValueError."""
-
+        """Empty title should raise ValueError."""
         use_case = CreatePostUseCase(
             repository=empty_repository,
             summarizer=mock_summarizer,
+            storage=mock_storage,
         )
 
-        with pytest.raises(ValueError, match="nombre"):
+        with pytest.raises(ValueError, match="title"):
             use_case.execute(
-                nombre="",
-                descripcion="Some description",
+                title="",
+                description="Some description",
             )
 
-    def test_empty_descripcion_raises_error(
+    def test_empty_description_raises_error(
         self,
         empty_repository: MockPostRepository,
         mock_summarizer: MockSummarizer,
+        mock_storage: MockStorageService,
     ) -> None:
-        """Empty descripcion should raise ValueError."""
-
+        """Empty description should raise ValueError."""
         use_case = CreatePostUseCase(
             repository=empty_repository,
             summarizer=mock_summarizer,
+            storage=mock_storage,
         )
 
-        with pytest.raises(ValueError, match="descripción"):
+        with pytest.raises(ValueError, match="description"):
             use_case.execute(
-                nombre="Title",
-                descripcion="",
+                title="Title",
+                description="",
             )
 
-    def test_whitespace_only_nombre_raises_error(
+    def test_whitespace_only_title_raises_error(
         self,
         empty_repository: MockPostRepository,
         mock_summarizer: MockSummarizer,
+        mock_storage: MockStorageService,
     ) -> None:
-        """Whitespace-only nombre should raise ValueError."""
-
+        """Whitespace-only title should raise ValueError."""
         use_case = CreatePostUseCase(
             repository=empty_repository,
             summarizer=mock_summarizer,
+            storage=mock_storage,
         )
 
-        with pytest.raises(ValueError, match="nombre"):
+        with pytest.raises(ValueError, match="title"):
             use_case.execute(
-                nombre="   ",
-                descripcion="Valid description",
+                title="   ",
+                description="Valid description",
             )

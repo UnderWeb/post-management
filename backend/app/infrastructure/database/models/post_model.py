@@ -1,4 +1,6 @@
 # backend/app/infrastructure/database/models/post_model.py
+"""Post ORM model."""
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -20,22 +22,27 @@ class PostModel(Base):
         autoincrement=True,
     )
 
-    nombre: Mapped[str] = mapped_column(
+    title: Mapped[str] = mapped_column(
         String(200),
         nullable=False,
     )
 
-    descripcion: Mapped[str] = mapped_column(
+    description: Mapped[str] = mapped_column(
         Text,
         nullable=False,
     )
 
-    resumen: Mapped[str] = mapped_column(
+    summary: Mapped[str] = mapped_column(
         Text,
         nullable=False,
     )
 
-    fecha_creacion: Mapped[datetime] = mapped_column(
+    file_path: Mapped[str | None] = mapped_column(
+        String(500),
+        nullable=True,
+    )
+
+    created_at: Mapped[datetime] = mapped_column(
         DateTime,
         nullable=False,
         server_default=func.now(),

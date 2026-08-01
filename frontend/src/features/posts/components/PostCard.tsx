@@ -1,64 +1,37 @@
-// src/features/posts/components/PostCard.tsx
-import {
-  useAppDispatch,
-} from '../../../hooks';
-import {
-  removePost,
-} from '../postsThunks';
-import type {
-  Post,
-} from '../types';
+// frontend/src/features/posts/components/PostCard.tsx
+/**
+ * Component to display a single post row in the table.
+ */
+import { useAppDispatch } from '../../../hooks';
+import { removePost } from '../postsThunks';
+import type { Post } from '../../../types/post';
 
-interface PostCardProps {
+interface Props {
   post: Post;
 }
 
-function PostCard(
-  {
-    post,
-  }: PostCardProps,
-) {
+function PostCard({ post }: Props) {
   const dispatch = useAppDispatch();
 
   function handleDelete() {
-    dispatch(
-      removePost(post.id),
-    );
+    dispatch(removePost(post.id));
   }
 
   return (
-    <article>
-      <h2>
-        {post.nombre}
-      </h2>
-      <p>
-        {post.descripcion}
-      </p>
-      {
-        post.resumen && (
-          <pre>
-            {JSON.stringify(
-              post.resumen,
-              null,
-              2,
-            )}
-          </pre>
-        )
-      }
-      <small>
-        {
-          new Date(
-            post.fecha_creacion,
-          ).toLocaleString()
-        }
-      </small>
-      <button
-        type='button'
-        onClick={handleDelete}
-      >
-        Eliminar
-      </button>
-    </article>
+    <tr>
+      <td>{post.title}</td>
+      <td>{post.description}</td>
+      <td>
+        {post.summary?.summary && (
+          <small style={{ display: 'block', color: '#666', marginBottom: '4px' }}>
+            Resumen: {post.summary.summary}
+          </small>
+        )}
+        <button className="delete-button" onClick={handleDelete}>
+          Eliminar
+        </button>
+      </td>
+    </tr>
   );
 }
 

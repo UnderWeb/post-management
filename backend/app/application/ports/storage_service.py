@@ -1,4 +1,6 @@
 # backend/app/application/ports/storage_service.py
+"""Storage service port."""
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod

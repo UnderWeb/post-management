@@ -1,6 +1,11 @@
 # backend/app/application/use_cases/create_post.py
+"""Create post use case."""
+
 from __future__ import annotations
 
+from typing import BinaryIO
+
+from app.application.ports.storage_service import StoragePort
 from app.application.ports.summarizer_service import SummarizerPort
 from app.core.logging import get_logger
 from app.domain.entities.post import Post
@@ -16,38 +21,45 @@ class CreatePostUseCase:
         self,
         repository: PostRepository,
         summarizer: SummarizerPort,
+        storage: StoragePort,
     ) -> None:
         self._repository = repository
         self._summarizer = summarizer
+        self._storage = storage
 
     def execute(
         self,
-        nombre: str,
-        descripcion: str,
+        title: str,
+        description: str,
+        file_data: BinaryIO | None = None,
+        filename: str | None = None,
     ) -> Post:
         """Create a new post."""
+        title = title.strip()
+        description = description.strip()
 
-        nombre = nombre.strip()
-        descripcion = descripcion.strip()
+        if not title:
+            raise ValueError("title cannot be empty")
 
-        if not nombre:
-            raise ValueError("nombre no puede estar vacío")
+        if not description:
+            raise ValueError("description cannot be empty")
 
-        if not descripcion:
-            raise ValueError("descripción no puede estar vacía")
+        file_path = None
 
-        resumen = self._summarizer.summarize(descripcion)
+        if file_data and filename:
+            file_path = self._storage.save_file(file_data, filename)
+
+        summary = self._summarizer.summarize(description)
 
         post = Post(
-            nombre=nombre,
-            descripcion=descripcion,
-            resumen=resumen,
+            title=title,
+            description=description,
+            summary=summary,
+            file_path=file_path,
         )
 
-        logger.info("Creating post '%s'", nombre)
-
+        logger.info("Creating post '%s'", title)
         saved_post = self._repository.create(post)
-
         logger.info("Post created with id=%s", saved_post.id)
 
         return saved_post

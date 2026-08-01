@@ -1,16 +1,16 @@
-// src/types/post.ts
+// frontend/src/types/post.ts
+/**
+ * Type definitions for Post entities matching the backend API.
+ */
+
 export interface Post {
   id: number;
-  nombre: string;
-  descripcion: string;
-  resumen: {
+  title: string;
+  description: string;
+  summary: {
     summary: string;
     keywords: string[];
   };
-  fecha_creacion: string;
-}
-
-export interface CreatePostRequest {
-  nombre: string;
-  descripcion: string;
+  file_path: string | null;
+  created_at: string;
 }

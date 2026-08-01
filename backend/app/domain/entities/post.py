@@ -10,8 +10,11 @@ from typing import Any
 class Post:
     """Domain entity representing a post."""
 
-    nombre: str
-    descripcion: str
+    title: str
+    description: str
     id: int | None = None
-    resumen: dict[str, Any] = field(default_factory=dict)
-    fecha_creacion: datetime = field(default_factory=lambda: datetime.now(UTC))
+    summary: dict[str, Any] = field(default_factory=dict)
+    file_path: str | None = None
+    created_at: datetime = field(
+        default_factory=lambda: datetime.now(UTC),
+    )

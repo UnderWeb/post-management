@@ -1,15 +1,10 @@
-// src/features/posts/postsSlice.ts
-import {
-  createSlice,
-} from '@reduxjs/toolkit';
-import {
-  fetchPosts,
-  createNewPost,
-  removePost,
-} from './postsThunks';
-import type {
-  Post,
-} from '../../types/post';
+// frontend/src/features/posts/postsSlice.ts
+/**
+ * Redux slice for managing posts state.
+ */
+import { createSlice } from '@reduxjs/toolkit';
+import { fetchPosts, createNewPost, removePost } from './postsThunks';
+import type { Post } from '../../types/post';
 
 interface PostsState {
   items: Post[];
@@ -27,8 +22,7 @@ const postsSlice = createSlice({
   name: 'posts',
   initialState,
   reducers: {},
-
-  extraReducers(builder) {
+  extraReducers: (builder) => {
     builder
       .addCase(fetchPosts.pending, (state) => {
         state.loading = true;
@@ -40,20 +34,15 @@ const postsSlice = createSlice({
       })
       .addCase(fetchPosts.rejected, (state, action) => {
         state.loading = false;
-        state.error =
-          action.error.message ?? 'Error loading posts';
+        state.error = action.error.message ?? 'Error loading posts';
       })
       .addCase(createNewPost.fulfilled, (state, action) => {
         state.items.push(action.payload);
       })
       .addCase(removePost.fulfilled, (state, action) => {
-        state.items =
-          state.items.filter(
-            (post) => post.id !== action.payload,
-          );
+        state.items = state.items.filter((post) => post.id !== action.payload);
       });
   },
 });
-
 
 export default postsSlice.reducer;

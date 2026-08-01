@@ -1,72 +1,71 @@
-// src/features/posts/components/CreatePostForm.tsx
-import {
-  useState,
-} from 'react';
-
-import type {
-  SyntheticEvent,
-} from 'react';
-
-import {
-  useAppDispatch,
-} from '../../../hooks';
-
-import {
-  createNewPost,
-} from '../postsThunks';
-
+// frontend/src/features/posts/components/CreatePostForm.tsx
+/**
+ * Form component for creating a new post with optional file upload.
+ */
+import { useState } from 'react';
+import { useAppDispatch } from '../../../hooks';
+import { createNewPost } from '../postsThunks';
 
 function CreatePostForm() {
   const dispatch = useAppDispatch();
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [file, setFile] = useState<File | null>(null);
 
-  const [
-    nombre,
-    setNombre,
-  ] = useState('');
-
-  const [
-    descripcion,
-    setDescripcion,
-  ] = useState('');
-
-
-  function handleSubmit(
-    event: SyntheticEvent<HTMLFormElement>,
-  ) {
+  function handleSubmit(event: React.SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!nombre.trim() || !descripcion.trim()) {
+    if (!title.trim() || !description.trim()) {
       return;
     }
 
-    dispatch(
-      createNewPost({
-        nombre: nombre.trim(),
-        descripcion: descripcion.trim(),
-      }),
-    );
+    const formData = new FormData();
+    formData.append('title', title.trim());
+    formData.append('description', description.trim());
+    if (file) {
+      formData.append('file', file);
+    }
 
-    setNombre('');
-    setDescripcion('');
+    dispatch(createNewPost(formData));
+
+    setTitle('');
+    setDescription('');
+    setFile(null);
+    
+    // Reset file input visually
+    const fileInput = document.getElementById('file-input') as HTMLInputElement | null;
+    if (fileInput) fileInput.value = '';
+  }
+
+  function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+    if (event.target.files && event.target.files.length > 0) {
+      setFile(event.target.files[0]);
+    }
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form className="create-post-form" onSubmit={handleSubmit}>
       <input
-        value={nombre}
-        onChange={(event) =>
-          setNombre(event.target.value)
-        }
-        placeholder='Nombre'
+        className="form-input"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        placeholder="Título"
+        required
       />
-      <textarea
-        value={descripcion}
-        onChange={(event) =>
-          setDescripcion(event.target.value)
-        }
-        placeholder='Descripción'
+      <input
+        className="form-input"
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        placeholder="Descripción"
+        required
       />
-      <button type='submit'>
+      <input
+        id="file-input"
+        className="form-input"
+        type="file"
+        onChange={handleFileChange}
+      />
+      <button className="primary-button" type="submit">
         Crear
       </button>
     </form>

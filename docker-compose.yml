@@ -8,7 +8,7 @@ services:
     ports:
       - "1433:1433"
     volumes:
-      - mssql_data:/var/opt/mssql
+      - post_mssql:/var/opt/mssql
     networks:
       - btg_network
     healthcheck:
@@ -21,6 +21,27 @@ services:
       timeout: 5s
       retries: 10
       start_period: 30s
+    restart: unless-stopped
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY:-minioadmin}
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - post_minio:/data
+    networks:
+      - btg_network
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     restart: unless-stopped
 
   posts_backend:
@@ -36,10 +57,21 @@ services:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}
+      APP_ENV: development
+      S3_ENDPOINT_URL: http://minio:9000
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-minioadmin}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:-minioadmin}
+      S3_BUCKET_NAME: ${S3_BUCKET_NAME:-posts}
+      S3_REGION: ${S3_REGION:-us-east-1}
     ports:
       - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - /app/__pycache__
     depends_on:
       db:
+        condition: service_healthy
+      minio:
         condition: service_healthy
     networks:
       - btg_network
@@ -58,7 +90,8 @@ services:
     restart: unless-stopped
 
 volumes:
-  mssql_data:
+  post_mssql:
+  post_minio:
 
 networks:
   btg_network:

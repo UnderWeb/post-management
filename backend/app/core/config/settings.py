@@ -1,4 +1,6 @@
 # backend/app/core/config/settings.py
+"""Application settings and configuration."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -13,12 +15,10 @@ def find_env_file() -> Path:
 
     Supports local execution and Docker execution.
     """
-
     current_file = Path(__file__).resolve()
 
     for parent in current_file.parents:
         env_file = parent / ".env"
-
         if env_file.exists():
             return env_file
 
@@ -49,8 +49,15 @@ class Settings(BaseSettings):
     db_password: str = "YourStrong!Passw0rd"
     db_name: str = "posts_db"
 
+    s3_endpoint_url: str = "http://minio:9000"
+    s3_access_key: str = "minioadmin"
+    s3_secret_key: str = "minioadmin"
+    s3_bucket_name: str = "posts"
+    s3_region: str = "us-east-1"
+
     @property
     def database_url(self) -> str:
+        """Generate the SQLAlchemy database URL."""
         password = quote_plus(self.db_password)
 
         return (

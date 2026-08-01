@@ -1,4 +1,6 @@
 # backend/tests/test_api_endpoints.py
+"""API endpoint integration tests with mocked dependencies."""
+
 from __future__ import annotations
 
 from fastapi.testclient import TestClient
@@ -9,6 +11,7 @@ from tests.conftest import (
     SAMPLE_POST_1,
     SAMPLE_POST_2,
     MockPostRepository,
+    MockStorageService,
     MockSummarizer,
 )
 
@@ -27,20 +30,12 @@ class TestAPIEndpoints:
     # ------------------------------------------------------------------
 
     def test_health_check(self) -> None:
-        """
-        Health endpoint should return API status successfully.
-
-        Database connectivity is an infrastructure concern and is not
-        asserted here because this suite uses mocked application layers.
-        """
-
+        """Health endpoint should return API status successfully."""
         with TestClient(app) as client:
             response = client.get("/health")
 
         assert response.status_code == 200
-
         body = response.json()
-
         assert body["status"] == "ok"
 
     # ------------------------------------------------------------------
@@ -49,15 +44,8 @@ class TestAPIEndpoints:
 
     def test_list_posts(self) -> None:
         """GET /api/posts should return all posts."""
-
         repository = MockPostRepository()
-
-        repository.seed(
-            [
-                SAMPLE_POST_1,
-                SAMPLE_POST_2,
-            ]
-        )
+        repository.seed([SAMPLE_POST_1, SAMPLE_POST_2])
 
         app.dependency_overrides[dependencies.get_post_repository] = lambda: repository
 
@@ -65,7 +53,6 @@ class TestAPIEndpoints:
             response = client.get("/api/posts")
 
         assert response.status_code == 200
-
         body = response.json()
 
         assert isinstance(body, list)
@@ -79,67 +66,57 @@ class TestAPIEndpoints:
 
     def test_create_post(self) -> None:
         """POST /api/posts should create a post."""
-
         repository = MockPostRepository()
         summarizer = MockSummarizer()
+        storage = MockStorageService()
 
         app.dependency_overrides[dependencies.get_post_repository] = lambda: repository
-
         app.dependency_overrides[dependencies.get_summarizer_service] = (
             lambda: summarizer
         )
+        app.dependency_overrides[dependencies.get_storage_service] = lambda: storage
 
         with TestClient(app) as client:
             response = client.post(
                 "/api/posts",
-                json={
-                    "nombre": "New Post",
-                    "descripcion": "New description content.",
+                data={
+                    "title": "New Post",
+                    "description": "New description content.",
                 },
             )
 
         assert response.status_code == 201
-
         body = response.json()
 
         assert body["id"] > 0
-        assert body["nombre"] == "New Post"
-        assert body["descripcion"] == "New description content."
+        assert body["title"] == "New Post"
+        assert body["description"] == "New description content."
+        assert "summary" in body
+        assert "summary" in body["summary"]
+        assert "keywords" in body["summary"]
 
-        assert "resumen" in body
-        assert "summary" in body["resumen"]
-        assert "keywords" in body["resumen"]
-
-    def test_create_post_empty_nombre_returns_422(
-        self,
-        client: TestClient,
-    ) -> None:
-        """Empty nombre should fail validation."""
-
+    def test_create_post_empty_title_returns_422(self, client: TestClient) -> None:
+        """Empty title should fail validation."""
         response = client.post(
             "/api/posts",
-            json={
-                "nombre": "",
-                "descripcion": "Valid description",
+            data={
+                "title": "",
+                "description": "Valid description",
             },
         )
-
         assert response.status_code == 422
 
-    def test_create_post_empty_descripcion_returns_422(
-        self,
-        client: TestClient,
+    def test_create_post_empty_description_returns_422(
+        self, client: TestClient
     ) -> None:
-        """Empty descripcion should fail validation."""
-
+        """Empty description should fail validation."""
         response = client.post(
             "/api/posts",
-            json={
-                "nombre": "Valid title",
-                "descripcion": "",
+            data={
+                "title": "Valid title",
+                "description": "",
             },
         )
-
         assert response.status_code == 422
 
     # ------------------------------------------------------------------
@@ -148,36 +125,32 @@ class TestAPIEndpoints:
 
     def test_delete_post(self) -> None:
         """DELETE existing post should return 204."""
-
         repository = MockPostRepository()
-
-        repository.seed(
-            [
-                SAMPLE_POST_1,
-            ]
-        )
+        repository.seed([SAMPLE_POST_1])
 
         app.dependency_overrides[dependencies.get_post_repository] = lambda: repository
+        app.dependency_overrides[dependencies.get_storage_service] = (
+            lambda: MockStorageService()
+        )
 
         with TestClient(app) as client:
             response = client.delete(f"/api/posts/{SAMPLE_POST_1.id}")
 
         assert response.status_code == 204
-
         assert repository.get_by_id(SAMPLE_POST_1.id) is None
 
     def test_delete_post_not_found(self) -> None:
         """DELETE missing post should return 404."""
-
         repository = MockPostRepository()
 
         app.dependency_overrides[dependencies.get_post_repository] = lambda: repository
+        app.dependency_overrides[dependencies.get_storage_service] = (
+            lambda: MockStorageService()
+        )
 
         with TestClient(app) as client:
             response = client.delete("/api/posts/9999")
 
         assert response.status_code == 404
-
         body = response.json()
-
         assert "detail" in body

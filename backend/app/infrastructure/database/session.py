@@ -1,4 +1,6 @@
 # backend/app/infrastructure/database/session.py
+"""Database session and engine configuration."""
+
 from __future__ import annotations
 
 from sqlalchemy import create_engine

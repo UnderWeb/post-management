@@ -77,11 +77,20 @@ PY
 echo "Database ready."
 
 echo "Running migrations..."
-
 alembic upgrade head
+
+echo "Running seeders..."
+python scripts/seed.py
 
 echo "Starting API..."
 
+RELOAD_FLAG=""
+if [ "${APP_ENV}" = "development" ]; then
+    RELOAD_FLAG="--reload"
+    echo "Hot-reload enabled."
+fi
+
 exec uvicorn app.main:app \
     --host "${HOST:-0.0.0.0}" \
-    --port "${PORT:-8000}"
+    --port "${PORT:-8000}" \
+    ${RELOAD_FLAG}

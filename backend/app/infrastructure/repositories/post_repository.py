@@ -1,5 +1,9 @@
 # backend/app/infrastructure/repositories/post_repository.py
+"""Post repository implementation."""
+
 from __future__ import annotations
+
+import json
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -15,12 +19,25 @@ class SqlAlchemyPostRepository(PostRepository):
     def __init__(self, session: Session) -> None:
         self.session = session
 
+    def create(self, post: Post) -> Post:
+        """Persist a post and return the created entity."""
+        return self.add(post)
+
+    def list(self) -> list[Post]:
+        """Return all posts."""
+        return self.get_all()
+
     def add(self, post: Post) -> Post:
+        """Add a new post to the database."""
         model = PostModel(
-            nombre=post.nombre,
-            descripcion=post.descripcion,
-            resumen=post.resumen,
-            fecha_creacion=post.fecha_creacion,
+            title=post.title,
+            description=post.description,
+            summary=json.dumps(
+                post.summary,
+                ensure_ascii=False,
+            ),
+            file_path=post.file_path,
+            created_at=post.created_at,
         )
 
         self.session.add(model)
@@ -29,11 +46,16 @@ class SqlAlchemyPostRepository(PostRepository):
         return self._to_entity(model)
 
     def get_all(self) -> list[Post]:
+        """Retrieve all posts from the database."""
         result = self.session.execute(select(PostModel))
 
         return [self._to_entity(item) for item in result.scalars().all()]
 
-    def get_by_id(self, post_id: int) -> Post | None:
+    def get_by_id(
+        self,
+        post_id: int,
+    ) -> Post | None:
+        """Retrieve a post by its identifier."""
         model = self.session.get(
             PostModel,
             post_id,
@@ -44,7 +66,11 @@ class SqlAlchemyPostRepository(PostRepository):
 
         return self._to_entity(model)
 
-    def delete(self, post_id: int) -> bool:
+    def delete(
+        self,
+        post_id: int,
+    ) -> bool:
+        """Delete a post by its identifier."""
         model = self.session.get(
             PostModel,
             post_id,
@@ -58,11 +84,23 @@ class SqlAlchemyPostRepository(PostRepository):
         return True
 
     @staticmethod
-    def _to_entity(model: PostModel) -> Post:
+    def _to_entity(
+        model: PostModel,
+    ) -> Post:
+        """Convert an ORM model to a domain entity."""
+        summary = model.summary
+
+        if isinstance(summary, str):
+            try:
+                summary = json.loads(summary)
+            except json.JSONDecodeError:
+                pass
+
         return Post(
             id=model.id,
-            nombre=model.nombre,
-            descripcion=model.descripcion,
-            resumen=model.resumen,
-            fecha_creacion=model.fecha_creacion,
+            title=model.title,
+            description=model.description,
+            summary=summary,
+            file_path=model.file_path,
+            created_at=model.created_at,
         )

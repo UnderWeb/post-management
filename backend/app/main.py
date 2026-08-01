@@ -1,4 +1,5 @@
 # backend/app/main.py
+"""Application entry point."""
 
 from __future__ import annotations
 
@@ -20,7 +21,6 @@ logger = get_logger(__name__)
 
 def create_app() -> FastAPI:
     """Application factory."""
-
     app = FastAPI(
         title=settings.app_name,
         version=settings.app_version,
@@ -30,7 +30,6 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(router)
-
     register_exception_handlers(app)
 
     @app.middleware("http")
@@ -39,7 +38,6 @@ def create_app() -> FastAPI:
         call_next: Callable[[Request], Awaitable[Response]],
     ) -> Response:
         request_id = uuid.uuid4().hex[:8]
-
         start = time.perf_counter()
 
         logger.info(
@@ -50,7 +48,6 @@ def create_app() -> FastAPI:
         )
 
         response = await call_next(request)
-
         elapsed = (time.perf_counter() - start) * 1000
 
         logger.info(
@@ -63,15 +60,9 @@ def create_app() -> FastAPI:
         )
 
         response.headers["X-Request-ID"] = request_id
-
         return response
 
-    logger.info(
-        "%s %s started",
-        settings.app_name,
-        settings.app_version,
-    )
-
+    logger.info("%s %s started", settings.app_name, settings.app_version)
     return app
 
 

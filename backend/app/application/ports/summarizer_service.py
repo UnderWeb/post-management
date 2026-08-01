@@ -1,4 +1,6 @@
 # backend/app/application/ports/summarizer_service.py
+"""Summarizer service port."""
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
